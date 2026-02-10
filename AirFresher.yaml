@@ -20,12 +20,52 @@ cards:
     cards:
       - type: custom:mushroom-chips-card
         chips:
+          - type: template
+            icon: mdi:clock
+            entity: input_number.period_raboty_osvezhitelia
+            content: "{{states(config.entity)|float(0)|round(0)|replace(\".\",\",\")}} мин."
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            double_tap_action:
+              action: none
+            card_mod:
+              style: |
+                ha-card {
+                  opacity: 0.4 }   
           - type: spacer
           - type: template
-            icon: mdi:percent
+            icon: mdi:counter
+            entity: counter.osvezhitel
+            content: >-
+              {{states(config.entity)|float(0)|round(0)|replace(".",",")|format(morph='раз',
+              as_text=false)}}
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            double_tap_action:
+              action: none
+            card_mod:
+              style: |
+                ha-card {
+                  opacity: 0.4 }   
+          - type: template
+            icon: >-
+              {% if states('sensor.air_fresh_vol')|int(0) > 87.5 %}
+              mdi:circle-slice-8 {% elif states('sensor.air_fresh_vol')|int(0) >
+              75 %} mdi:circle-slice-7 {% elif
+              states('sensor.air_fresh_vol')|int(0) > 62.5 %} mdi:circle-slice-6
+              {% elif states('sensor.air_fresh_vol')|int(0) > 50 %}
+              mdi:circle-slice-5 {% elif states('sensor.air_fresh_vol')|int(0) >
+              37.5 %} mdi:circle-slice-4 {% elif
+              states('sensor.air_fresh_vol')|int(0) > 25 %} mdi:circle-slice-3
+              {% elif states('sensor.air_fresh_vol')|int(0) > 12.5 %}
+              mdi:circle-slice-2 {% elif states('sensor.air_fresh_vol')|int(0) >
+              5 %} mdi:circle-slice-1 {% else %} mdi:circle-outline {% endif %}
             entity: sensor.air_fresh_vol
-            content: "{{states(config.entity)|float(0)|round(3)|replace(\".\",\",\")}}%"
-            icon_color: disabled
+            content: "{{states(config.entity)|float(0)|round(1)|replace(\".\",\",\")}}%"
             tap_action:
               action: more-info
             hold_action:
@@ -34,14 +74,17 @@ cards:
               action: none
             card_mod:
               style: |
+                ha-card {
+                  opacity: 0.4 }   
                 ha-card:hover {
-                  --chip-background: rgba(var(--rgb-primary-text-color), 0.1);
-                  }
+                  opacity: 1 }     
+                ha-card:active {
+                  scale: 0.8;
+                }  
           - type: template
             icon: mdi:chart-line-variant
             entity: sensor.prognoz_vremeni_osvezhitelia
             content: "{{states(config.entity)}} дн."
-            icon_color: disabled
             tap_action:
               action: more-info
             hold_action:
@@ -50,39 +93,19 @@ cards:
               action: none
             card_mod:
               style: |
+                ha-card {
+                  opacity: 0.4 }   
                 ha-card:hover {
-                  --chip-background: rgba(var(--rgb-primary-text-color), 0.1);
-                  }
+                  opacity: 1 }     
+                ha-card:active {
+                  scale: 0.8;
+                }  
         alignment: start
         card_mod:
           style: |
-            ha-card {
-              opacity:1000%;
-              --chip-height: 50px;
-              --chip-background: none;
-              --chip-border-radius: 50px;
-              --primary-text-color: rgba(var(--rgb-disabled)); ;
-
-              background-color: transparent !important;
-              }
-            ha-card:hover {
-               opacity: 100%; }
-            ha-card > .chip-container {
-              flex-wrap: nowrap;
-              overflow-x: scroll;
-              overflow-y: hidden;
-              --chip-spacing: 0px;
-              --chip-height: 45px;
-              --chip-font-weight: bolder; 
-
-              padding-bottom: 40px;
-              padding-right: 10px;
-              padding-top: 10px;
-              margin-bottom: 20px;
-            }
-            ha-card > .chip-container > * {
-              flex-shrink: 0;
-            }
+            {% set top = 7 %}
+            {% set chip_height = 48 %}
+            {% include 'title_chips_scrollable.jinja' %}
     card_mod:
       style: |
         ha-card {
@@ -91,8 +114,9 @@ cards:
           top: 100px !important;
           left: calc(50vw + var(--mdc-drawer-width, 0px)/2) !important;
           transform: translateX(-50%) !important;
-          width: calc(100% - 40px) !important;
+          width: calc(90vw - var(--mdc-drawer-width, 0px)) !important;
           max-width: 950px !important;
+          min-width: 450px !important;
           height: calc(100% - 40px) !important;
           max-height: 60px !important;  /* 30px - отступ от краёв */
           min-height: 50px !important;  /* Минимальная высота */
@@ -157,173 +181,27 @@ cards:
             fill_container: true
             card_mod:
               style: |
-                ha-card:before {
-                  transform: translate3d(0,0,0);
-                  -webkit-transform: translate3d(0,0,0);
-                  content: "";
-                  background: url('/local/cards_img/fresh_air.png') center no-repeat;
-                  background-size: cover;
-                  margin: 0px 0px -20px 0px;
-                  aspect-ratio: 1 / 1; 
-                  border-radius: 30px;
-                  }
-                ha-card {
-                  border-radius: 30px; 
-                  border: 2px outset rgba(0,0,0,0);}
-                  border-width: 0px;
-          - type: custom:stack-in-card
-            cards:
-              - type: custom:stack-in-card
-                cards:
-                  - type: custom:mushroom-template-card
-                    primary: |+
+                {% set domain = '' %}
+                {% set file = '/local/cards_img/fresh_air.png' %}
+                {% set entity = 'switch.air_fresher' %}
+                {% set state_on = 'on' %}
 
-                    secondary: ""
-                    icon: ""
-                    picture: ""
-                    badge_icon: ""
-                    badge_color: ""
-                    layout: vertical
-                    icon_color: ""
-                    tap_action:
-                      action: more-info
-                    double_tap_action:
-                      action: none
-                    fill_container: true
-                    card_mod:
-                      style: |
-                        ha-card:before {
-                          transform: translate3d(0,0,0);
-                          -webkit-transform: translate3d(0,0,0);
-                          
-                          content: "";
-                          background: url('/local/cards_img/fresh_air.png') center no-repeat;
-                          filter:  opacity(50%)  !important;
-                          background-size: cover;
-                          margin: 0px 0px -20px 0px;
-                          filter: blur(0px) saturate(100%) brightness(50%);
-                          aspect-ratio: 1 / 1; 
-                          border-radius: 30px;
-                          }
-                        ha-card {
-                          border-radius: 30px; 
-                          border: 2px outset rgba(0,0,0,0);}
-                          border-width: 0px;
-                card_mod:
-                  style: |
-                    ha-card {
-                      border-radius: 35px;
-                    }
-              - type: custom:mushroom-chips-card
-                chips:
-                  - type: spacer
-                  - type: template
-                    entity: switch.air_fresher
-                    tap_action:
-                      action: toggle
-                    hold_action:
-                      action: none
-                    double_tap_action:
-                      action: none
-                    icon: fas:spray-can-sparkles
-                    icon_color: >-
-                      {%if is_state(config.entity,'on')%} blue {%else %} '1' {%
-                      endif %}
-                    card_mod:
-                      style: |
-                        ha-card {
-                          margin: -55px 0px 0px 0px;
-                          --chip-height: 220px;  /* Значение для ПК */
-                          --chip-padding: -20px;
-                          background: 
-                          {% if is_state(config.entity, 'on') %} rgba(255,255,255,1) !important;;
-                          {% else %}rgba(var(--rgb-card-background-color), 0.5) !important;
-                          {% endif %}
-                          backdrop-filter: blur(10px) !important;
-                          -webkit-backdrop-filter: blur(10px) !important;
-                          box-shadow: 0px 20px 40px 5px rgba(0, 0, 0, 0.7) !important;
-                          border: 1px solid var(--ha-card-border-color, rgba(var(--rgb-primary-text-color),0.1)) !important;
-                          display: flex !important;
-                          flex-direction: column !important;
-                          justify-content: center !important;
-                          align-items: center !important;
-                          transition: all 0.3s ease !important;
-                          }
-                        ha-card:hover {
-                          scale: 1.1;
-                          }
-
-                          /* Для мобильных (ширина экрана ≤ 600px) */
-                        @media (max-width: 1150px) {
-                          ha-card {
-                            --chip-height: 125px !important;
-                            margin: -30px 0px 0px 0px;
-                            }
-                        }
-                  - type: spacer
-                alignment: center
-                card_mod:
-                  style: |
-                    ha-card {
-                      margin: 20px 12px 20px 12px;
-                      --chip-border-radius: 100%;
-                      --chip-spacing: 25px;
-                      position: absolute !important;
-                      left: 0px;
-                      right: 0px;
-                      top: 54% !important;
-                      transform: translate(0%, -70%);
-                      background-color: none !important;
-                      --chip-height: 110px; /* Значение по умолчанию (для ПК) */
-                      }
-                      /* Для узких экранов (телефонов) */
-                    @media (max-width: 1150px) {
-                      ha-card {
-                        --chip-height: 65px !important;
-                        top: 52% !important;
-                      }
-                    }
-            card_mod:
-              style: |
-                ha-card {
-                  opacity:0%;
-                  --chip-height: 50px;
-                  --chip-background: transparent !important;
-                  --chip-border-radius: 30px;
-                  position: absolute !important;
-                  border-radius: 30px;
-                  top: 0px !important;
-                  left: 0px;
-                  right: 0px;
-                  background-color: transparent !important;
-                  
-                  }
-                ha-card:hover {
-                   opacity: 100%; }
-          - type: custom:mushroom-template-card
-            primary: Освежитель
-            secondary: "{{states('sensor.air_fresh_vol')|int(0)}}%"
-            icon: ""
-            picture: ""
-            badge_icon: ""
-            badge_color: ""
-            layout: vertical
-            icon_color: ""
-            tap_action:
+                {% include 'cover_card_cover.jinja' %}
+          - type: custom:mushroom-entity-card
+            entity: switch.air_fresher
+            icon_type: none
+            secondary_info: last-updated
+            hold_action:
               action: none
             double_tap_action:
               action: none
-            fill_container: true
+            tap_action:
+              action: none
+            layout: vertical
             card_mod:
               style:
                 .: |
-                  ha-card { 
-                    margin-top: 20px;
-                    margin-bottom: 20px;
-                    margin-left: 0px;
-                    margin-right: 0px;
-                    background: none !important ;
-                    }
+                  {% include 'cover_device_name.jinja' %}
                 mushroom-state-info$: |
                   .container {
                    --card-secondary-font-size: 15px;
@@ -333,35 +211,61 @@ cards:
           - type: custom:mushroom-chips-card
             chips:
               - type: template
+                entity: switch.air_fresher
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: none
+                double_tap_action:
+                  action: none
+                icon: fas:spray-can-sparkles
+                icon_color: >-
+                  {%if is_state(config.entity,'on')%} blue {%else %} '1' {%
+                  endif %}
+                card_mod:
+                  style:
+                    .: |
+                      {% set hover = 'true' %}
+                      {% set icon_size = '1.3' %}
+                      {% include 'button_opacity.jinja' %}
+            alignment: center
+            card_mod:
+              style:
+                .: >
+                  {% set background_color =
+                  '1rgba(var(--rgb-primary-text-color), 0.1)' %}
+
+                  {% include 'cover_buttons_stack.jinja' %}
+          - type: custom:mushroom-chips-card
+            chips:
+              - type: template
                 tap_action:
                   action: navigate
                   navigation_path: "#fresh_air"
                 icon: mdi:dots-horizontal
-                icon_color: disabled
+                icon_color: "1"
                 hold_action:
                   action: none
                 double_tap_action:
                   action: none
                 card_mod:
-                  style: |
-                    ha-card:hover {
-                      --chip-background: rgba(var(--rgb-primary-text-color), 0.1);
-                      }
-            alignment: end
+                  style:
+                    .: |
+                      {% set hover = 'true' %}
+                      {% set icon_size = '1.2' %}
+                      {% include 'button_opacity.jinja' %}
+            alignment: center
             layout_options:
               grid_columns: full
             card_mod:
-              style: |
-                ha-card {
-                  margin-top: 0px;
-                  --chip-font-size: 0.3em;
-                  --chip-icon-size: 0.55em;
-                  --chip-height: 55px;
-                  --chip-background: transparent;
-                  --chip-icon-size: 40px;
-                  --chip-padding: 8px;
-                  --chip-border-radius: 100px;
-                  --chip-spacing: 5px;
+              style:
+                .: |
+                  ha-card {
+                    --chip-background: none !important;
+                    --chip-border-radius: 1000px;
+                    --chip-height: 45px;
+                    --chip-spacing:0px;
+                    margin-top: 0px;
         grid_options:
           columns: 24
           rows: auto
@@ -416,8 +320,8 @@ cards:
         hash: "#fresh_air"
         name: Edifier R1280DB
         icon: mdi:speaker
-        margin_top_mobile: calc(100vh - 420px)
-        margin_top_desktop: calc(100vh - 370px)
+        margin_top_mobile: calc(100vh - 460px)
+        margin_top_desktop: calc(100vh - 410px)
         tap_action:
           action: none
         double_tap_action:
@@ -493,23 +397,9 @@ cards:
                 card_mod:
                   style:
                     mushroom-shape-icon$: |
-                      .shape {
-                        --shape-color: none !important;
-                        --icon-symbol-size:28px;
-                        padding-right: 100px;
-
-                      }
+                      {% include 'bubble_card_icon.jinja' %}
                     .: |
-                      ha-card { 
-                        background-color: rgba(255,255,255,0) ;
-                      }  
-                      ha-state-icon {
-                          {%if states('input_number.period_raboty_osvezhitelia')|int == 10%}
-                          color: #171717;
-                          {% else %} color: rgba(var(--rgb-primary-text-color), 1);
-                          {% endif %}
-                        
-                      }
+                      {% include 'mushroom_ha_card_transparent.jinja' %}
               - type: custom:mushroom-template-card
                 primary: 10 Минут
                 secondary: ""
@@ -534,34 +424,16 @@ cards:
                 card_mod:
                   style:
                     mushroom-state-info$: |
-                      .secondary {
-                        position: absolute;
-                        top: -10% !important;
-                        left: 10px;
-                        }
-                      .container {
-                       --card-secondary-font-size: 13.5px;
-                       --card-secondary-font-weight: bolder;
+                      {% include 'bubble_card_text.jinja' %}
                     .: |
-                      ha-card { 
-                        background-color: rgba(255,255,255,0) }};
-                      }  
+                      {% include 'mushroom_ha_card_transparent.jinja' %}
             card_mod:
               style:
                 .: |
-                  ha-card { 
-                      {%if states('input_number.period_raboty_osvezhitelia')|int == 10%}
-                      background-color: white;
-                      --primary-text-color: #171717;
-                      {% else %} background-color: rgba(var(--rgb-primary-text-color), 0.05);
-                      {% endif %}
-                      }
-                  ha-card:hover {
-                      {%if states('input_number.period_raboty_osvezhitelia')|int == 10%}
-                      {% else %} 
-                      background-color: rgba(var(--rgb-primary-text-color), 0.1);
-                      {% endif %}
-                  }  
+                  {% set entity = 'input_number.period_raboty_osvezhitelia'%}
+                  {% set state_on = '10.0' %}
+
+                  {% include 'bubble_card_stack.jinja' %}
           - type: custom:vertical-stack-in-card
             cards:
               - type: custom:mushroom-template-card
@@ -588,23 +460,9 @@ cards:
                 card_mod:
                   style:
                     mushroom-shape-icon$: |
-                      .shape {
-                        --shape-color: none !important;
-                        --icon-symbol-size:28px;
-                        padding-right: 100px;
-
-                      }
+                      {% include 'bubble_card_icon.jinja' %}
                     .: |
-                      ha-card { 
-                        background-color: rgba(255,255,255,0) ;
-                      }  
-                      ha-state-icon {
-                          {%if states('input_number.period_raboty_osvezhitelia')|int == 20%}
-                          color: #171717;
-                          {% else %} color: rgba(var(--rgb-primary-text-color), 1);
-                          {% endif %}
-                        
-                      }
+                      {% include 'mushroom_ha_card_transparent.jinja' %}
               - type: custom:mushroom-template-card
                 primary: 20 Минут
                 secondary: ""
@@ -629,34 +487,16 @@ cards:
                 card_mod:
                   style:
                     mushroom-state-info$: |
-                      .secondary {
-                        position: absolute;
-                        top: -10% !important;
-                        left: 10px;
-                        }
-                      .container {
-                       --card-secondary-font-size: 13.5px;
-                       --card-secondary-font-weight: bolder;
+                      {% include 'bubble_card_text.jinja' %}
                     .: |
-                      ha-card { 
-                        background-color: rgba(255,255,255,0) }};
-                      }  
+                      {% include 'mushroom_ha_card_transparent.jinja' %}
             card_mod:
               style:
                 .: |
-                  ha-card { 
-                      {%if states('input_number.period_raboty_osvezhitelia')|int == 20%}
-                      background-color: white;
-                      --primary-text-color: #171717;
-                      {% else %} background-color: rgba(var(--rgb-primary-text-color), 0.05);
-                      {% endif %}
-                      }
-                  ha-card:hover {
-                      {%if states('input_number.period_raboty_osvezhitelia')|int == 20%}
-                      {% else %} 
-                      background-color: rgba(var(--rgb-primary-text-color), 0.1);
-                      {% endif %}
-                  }  
+                  {% set entity = 'input_number.period_raboty_osvezhitelia' %}
+                  {% set state_on = '20.0' %}
+
+                  {% include 'bubble_card_stack.jinja' %}
           - type: custom:vertical-stack-in-card
             cards:
               - type: custom:mushroom-template-card
@@ -683,23 +523,9 @@ cards:
                 card_mod:
                   style:
                     mushroom-shape-icon$: |
-                      .shape {
-                        --shape-color: none !important;
-                        --icon-symbol-size:28px;
-                        padding-right: 100px;
-
-                      }
+                      {% include 'bubble_card_icon.jinja' %}
                     .: |
-                      ha-card { 
-                        background-color: rgba(255,255,255,0) ;
-                      }  
-                      ha-state-icon {
-                          {%if states('input_number.period_raboty_osvezhitelia')|int == 30%}
-                          color: #171717;
-                          {% else %} color: rgba(var(--rgb-primary-text-color), 1);
-                          {% endif %}
-                        
-                      }
+                      {% include 'mushroom_ha_card_transparent.jinja' %}
               - type: custom:mushroom-template-card
                 primary: 30 Минут
                 secondary: ""
@@ -724,34 +550,16 @@ cards:
                 card_mod:
                   style:
                     mushroom-state-info$: |
-                      .secondary {
-                        position: absolute;
-                        top: -10% !important;
-                        left: 10px;
-                        }
-                      .container {
-                       --card-secondary-font-size: 13.5px;
-                       --card-secondary-font-weight: bolder;
+                      {% include 'bubble_card_text.jinja' %}
                     .: |
-                      ha-card { 
-                        background-color: rgba(255,255,255,0) }};
-                      }  
+                      {% include 'mushroom_ha_card_transparent.jinja' %}
             card_mod:
               style:
                 .: |
-                  ha-card { 
-                      {%if states('input_number.period_raboty_osvezhitelia')|int == 30%}
-                      background-color: white;
-                      --primary-text-color: #171717;
-                      {% else %} background-color: rgba(var(--rgb-primary-text-color), 0.05);
-                      {% endif %}
-                      }
-                  ha-card:hover {
-                      {%if states('input_number.period_raboty_osvezhitelia')|int == 30%}
-                      {% else %} 
-                      background-color: rgba(var(--rgb-primary-text-color), 0.1);
-                      {% endif %}
-                  }  
+                  {% set entity = 'input_number.period_raboty_osvezhitelia'%}
+                  {% set state_on = '30.0' %}
+
+                  {% include 'bubble_card_stack.jinja' %}
         columns: 4
       - type: custom:bubble-card
         card_type: separator
@@ -762,85 +570,142 @@ cards:
           }
         name: Настройки
         icon: mdi:cog
-      - type: custom:vertical-stack-in-card
+      - square: false
+        type: grid
         cards:
-          - type: custom:layout-card
-            layout_type: custom:grid-layout
-            layout:
-              grid-template-columns: auto 55px
-              margin: "-4px -4px -8px -4px;"
+          - type: custom:vertical-stack-in-card
             cards:
               - type: custom:mushroom-template-card
-                primary: "{{states[config.entity].attributes.friendly_name}}"
-                secondary: "{{states(config.entity)|round(0)}} "
-                icon: fas:spray-can-sparkles
-                icon_color: blue
-                entity: input_number.emkost_ballona_osvezhitelia
-                tap_action:
-                  action: none
-                hold_action:
-                  action: none
-                double_tap_action:
-                  action: none
-                multiline_secondary: false
-                badge_icon: ""
-                badge_color: ""
-                picture: ""
-                grid_options:
-                  columns: 12
-                  rows: 1
-                card_mod:
-                  style: |
-                    ha-card {
-                      background: rgba(0,0,0,0);
-                        border-width: 0px; }
-              - type: custom:mushroom-template-card
-                primary: none
-                secondary: none
-                icon: mdi:pencil
-                icon_color: ""
+                primary: ""
+                secondary: ""
+                icon: mdi:cup
                 tap_action:
                   action: more-info
-                hold_action:
-                  action: none
+                icon_color: "1"
                 double_tap_action:
                   action: none
-                badge_icon: ""
                 badge_color: ""
+                fill_container: true
+                picture: ""
+                hold_action:
+                  action: none
+                layout: horizontal
+                badge_icon: ""
                 entity: input_number.emkost_ballona_osvezhitelia
                 card_mod:
                   style:
-                    .: |
-                      ha-card { 
-                        background: rgba(0,0,0,0);
-                      }  
                     mushroom-shape-icon$: |
-                      .shape {
-                        --shape-color: rgba(100,100,100,0.2) !important;
-                      }
-                      .shape:hover {
-                        --shape-color: rgba(100,100,100,0.4) !important;
-                      }
-        card_mod:
-          style:
-            .: |
-              ha-card { 
-                background: rgba(var(--rgb-primary-text-color), 0.05);
-              }  
+                      {% include 'bubble_card_icon.jinja' %}
+                    .: |
+                      {% include 'mushroom_ha_card_transparent.jinja' %}
+              - type: custom:mushroom-template-card
+                icon: ""
+                badge_icon: ""
+                tap_action:
+                  action: more-info
+                icon_color: ""
+                layout: horizontal
+                double_tap_action:
+                  action: none
+                badge_color: ""
+                fill_container: true
+                picture: ""
+                hold_action:
+                  action: none
+                entity: input_number.emkost_ballona_osvezhitelia
+                primary: "{{states(config.entity)|round(0)}} "
+                secondary: Ёмкость
+                card_mod:
+                  style:
+                    mushroom-state-info$: |
+                      {% include 'bubble_card_text.jinja' %}
+                    .: |
+                      {% include 'mushroom_ha_card_transparent.jinja' %}
+            card_mod:
+              style:
+                .: |
+                  {% set entity = 'input_number.period_raboty_osvezhitelia'%}
+                  {% set state_on = '' %}
+
+                  {% include 'bubble_card_stack.jinja' %}
+          - type: custom:vertical-stack-in-card
+            cards:
+              - type: custom:mushroom-template-card
+                primary: ""
+                secondary: ""
+                icon: mdi:restore-alert
+                tap_action:
+                  confirmation:
+                    text: Обнулить освежитель?
+                  action: perform-action
+                  perform_action: counter.reset
+                  target:
+                    entity_id: counter.osvezhitel
+                icon_color: "1"
+                double_tap_action:
+                  action: none
+                badge_color: ""
+                fill_container: true
+                picture: ""
+                hold_action:
+                  action: none
+                layout: horizontal
+                badge_icon: ""
+                entity: input_number.emkost_ballona_osvezhitelia
+                card_mod:
+                  style:
+                    mushroom-shape-icon$: |
+                      {% include 'bubble_card_icon.jinja' %}
+                    .: |
+                      {% include 'mushroom_ha_card_transparent.jinja' %}
+              - type: custom:mushroom-template-card
+                icon: ""
+                badge_icon: ""
+                icon_color: ""
+                layout: horizontal
+                double_tap_action:
+                  action: none
+                badge_color: ""
+                fill_container: true
+                picture: ""
+                tap_action:
+                  confirmation:
+                    text: Обнулить освежитель?
+                  action: perform-action
+                  perform_action: counter.reset
+                  target:
+                    entity_id: counter.osvezhitel
+                hold_action:
+                  action: none
+                entity: input_number.emkost_ballona_osvezhitelia
+                secondary: ""
+                primary: Сбросить
+                card_mod:
+                  style:
+                    mushroom-state-info$: |
+                      {% include 'bubble_card_text.jinja' %}
+                    .: |
+                      {% include 'mushroom_ha_card_transparent.jinja' %}
+            card_mod:
+              style:
+                .: |
+                  {% set entity = 'input_number.period_raboty_osvezhitelia'%}
+                  {% set state_on = '' %}
+
+                  {% include 'bubble_card_stack.jinja' %}
+        columns: 4
     grid_options:
       columns: full
   - type: heading
     icon: fas:spray-can-sparkles
-    heading: 2.0.1
+    heading: 2.1.3
     heading_style: title
     visibility:
       - condition: state
         entity: "1233"
         state: "12121"
   - type: markdown
-    content: |+
-
-
+    content: ''
     visibility:
       - condition: state
         entity: "1233"
