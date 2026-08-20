@@ -1,18 +1,15 @@
 type: custom:bubble-card
 card_type: pop-up
-hash: "#air_fresher"
+hash: '#air_fresher'
 margin_top_mobile: auto
 margin_top_desktop: auto
 show_header: false
 close_by_clicking_outside: false
-backdrop_blur: "5"
-bg_blur: "100"
-bg_opacity: "50"
 button_type: name
 styles: |
   #root {
     border: 1px solid rgba(var(--rgb-primary-text-color),0.1);
-    background: rgba(255, 255, 255, 0.1);
+    
     }
 sub_button:
   main: []
@@ -30,6 +27,38 @@ cards:
           action: none
         icon: fas:spray-can-sparkles
       - type: spacer
+      - type: template
+        entity: sensor.air_fresh_vol
+        content: |
+          {{states(entity)|float(0)|round(1)|replace(".",",")}}%
+        double_tap_action:
+          action: none
+        tap_action:
+          action: more-info
+        hold_action:
+          action: none
+        icon: mdi:chart-line-variant
+        card_mod:
+          style:
+            .: |
+              {% set hover = 'true' %}
+              {% set stating = 'false' %}
+              {% include 'chip_settings_style.jinja' %}
+      - type: template
+        entity: switch.air_fresher
+        double_tap_action:
+          action: none
+        tap_action:
+          action: more-info
+        hold_action:
+          action: none
+        icon: mdi:information
+        card_mod:
+          style:
+            .: |
+              {% set hover = 'true' %}
+              {% set stating = 'false' %}
+              {% include 'chip_settings_style.jinja' %}
       - type: back
         card_mod:
           style:
@@ -39,7 +68,7 @@ cards:
               {% include 'chip_settings_style.jinja' %}
     card_mod:
       style:
-        mushroom-back-chip:nth-child(3)$: |
+        mushroom-back-chip:last-child$: |
           ha-state-icon {
             --card-mod-icon: mdi:close;
           }
@@ -77,14 +106,7 @@ cards:
     card_mod:
       style:
         .: |
-          ha-card {
-             --chip-background: none !important;
-             --chip-border-radius: 1000px;
-             zoom: 6;
-             #--chip-height: 200px;
-             --chip-spacing: {{chip_spacing|default(0)}}px;
-             margin: 2px;
-             }
+          {% include 'big_button_popup.jinja' %}
   - type: custom:horizontal-stack-in-card
     cards:
       - type: custom:mushroom-template-card
@@ -112,7 +134,7 @@ cards:
           style: |
             ha-card {
               zoom: 1.5;
-              background: none;
+              background: none !important;
             }
       - type: custom:mushroom-template-card
         features_position: bottom
@@ -139,7 +161,7 @@ cards:
           style: |
             ha-card {
               zoom: 1.5;
-              background: none;
+              background: none !important;
             }
       - type: custom:mushroom-template-card
         features_position: bottom
@@ -166,7 +188,7 @@ cards:
           style: |
             ha-card {
               zoom: 1.5;
-              background: none;
+              background: none !important;
             }
       - type: custom:mushroom-template-card
         features_position: bottom
@@ -190,7 +212,7 @@ cards:
           style: |
             ha-card {
               zoom: 1.5;
-              background: none;
+              background: none !important;
             }
       - type: custom:mushroom-template-card
         features_position: bottom
@@ -209,7 +231,7 @@ cards:
           style: |
             ha-card {
               zoom: 1.5;
-              background: none;
+              background: none !important;
             }
     card_mod:
       style: |
@@ -218,4 +240,4 @@ cards:
         }
 popup_mode: default
 card_layout: large
-slide_to_close_distance: "500"
+slide_to_close_distance: '500'
