@@ -1,3 +1,3 @@
-# AirFresherCard
 
-<img width="554" height="916" alt="Снимок экрана 2026-02-10 в 14 00 35" src="https://github.com/user-attachments/assets/d01666e6-685f-4cb8-be0e-efd4bc195bae" />
+# AirFresherCard
+<img width="455" height="398" alt="Снимок экрана — 2026-08-20 в 21 30 09" src="https://github.com/user-attachments/assets/cfdb4c0c-ff03-4b60-8573-651eccd4d024" />
